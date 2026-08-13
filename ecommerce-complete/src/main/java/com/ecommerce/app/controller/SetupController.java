@@ -48,36 +48,28 @@ public class SetupController {
         userRepository.save(admin);
 
         // Categories
-        String[] catNames = {"Men", "Women", "Girls", "Boys", "Kids"};
-        Category[] cats = new Category[5];
+        String[] catNames = {"Land Sale", "Wedding", "Vehicle"};
+        Category[] cats = new Category[3];
         for (int i = 0; i < catNames.length; i++) {
             Category c = new Category();
             c.setName(catNames[i]);
             cats[i] = categoryRepository.save(c);
         }
 
-        // 20 Dress Shop Products
+        // Sample Products
         Object[][] products = {
-            {"Men Formal Shirt", "Slim fit cotton formal shirt for office wear", 34.99, 100, "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400", 0},
-            {"Men Casual T-Shirt", "Comfortable round neck cotton t-shirt", 19.99, 150, "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400", 0},
-            {"Men Denim Jeans", "Classic straight fit blue denim jeans", 49.99, 80, "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400", 0},
-            {"Men Ethnic Kurta", "Traditional cotton kurta for festive occasions", 39.99, 60, "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=400", 0},
-            {"Women Saree", "Elegant silk saree with golden border", 89.99, 40, "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400", 1},
-            {"Women Kurti", "Printed cotton kurti perfect for daily wear", 29.99, 120, "https://images.unsplash.com/photo-1594938298603-c8148c4b4e5e?w=400", 1},
-            {"Women Floral Dress", "Elegant floral print summer dress", 54.99, 90, "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400", 1},
-            {"Women Leggings", "Stretchable high-waist leggings for comfort", 24.99, 200, "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400", 1},
-            {"Women Salwar Suit", "Beautiful embroidered salwar kameez set", 69.99, 50, "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=400", 1},
-            {"Girls Frock", "Cute floral frock for little girls", 22.99, 100, "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=400", 2},
-            {"Girls Party Dress", "Sparkly tutu dress for birthday parties", 34.99, 70, "https://images.unsplash.com/photo-1476234251651-f353703a034d?w=400", 2},
-            {"Girls Lehenga", "Traditional lehenga choli for festivals", 44.99, 45, "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=400", 2},
-            {"Girls Casual Top", "Colorful printed top for everyday wear", 14.99, 130, "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=400", 2},
-            {"Boys Shirt & Pants Set", "Smart formal set for school and events", 29.99, 80, "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=400", 3},
-            {"Boys Graphic T-Shirt", "Fun printed t-shirt for active boys", 17.99, 150, "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=400", 3},
-            {"Boys Denim Shorts", "Comfortable denim shorts for summer", 22.99, 100, "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400", 3},
-            {"Boys Ethnic Kurta", "Festive cotton kurta pajama set for boys", 27.99, 60, "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=400", 3},
-            {"Kids Winter Jacket", "Warm padded jacket for cold weather", 44.99, 55, "https://images.unsplash.com/photo-1604671801908-6f0c6a092c05?w=400", 4},
-            {"Kids Pyjama Set", "Soft cotton night suit for kids", 19.99, 180, "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=400", 4},
-            {"Kids School Uniform", "Durable and comfortable school uniform set", 32.99, 90, "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=400", 4},
+            // Land Sale (index 0)
+            {"Agricultural Land - 2 Acres", "Fertile agricultural land near highway, clear title", 2500000.00, 1, "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400", 0},
+            {"Residential Plot - 5 Cents", "Approved residential plot in city limits", 1500000.00, 1, "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400", 0},
+            {"Commercial Land - 10 Cents", "Prime commercial land on main road", 5000000.00, 1, "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400", 0},
+            // Wedding (index 1)
+            {"Bridal Saree - Silk", "Premium Kanchipuram silk saree for brides", 15000.00, 10, "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400", 1},
+            {"Wedding Decoration Package", "Full wedding hall decoration with flowers", 50000.00, 5, "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400", 1},
+            {"Groom Sherwani", "Designer sherwani for groom with accessories", 12000.00, 8, "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=400", 1},
+            // Vehicle (index 2)
+            {"Honda Activa 6G", "Well maintained scooter, 2022 model, 8000 km", 65000.00, 1, "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400", 2},
+            {"Maruti Swift - 2020", "Single owner, AC, power steering, 30000 km", 550000.00, 1, "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400", 2},
+            {"Royal Enfield Classic 350", "2021 model, excellent condition, 15000 km", 150000.00, 1, "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400", 2},
         };
 
         for (Object[] p : products) {
@@ -91,6 +83,6 @@ public class SetupController {
             productRepository.save(product);
         }
 
-        return Map.of("message", "Dress shop setup complete! Admin: admin / Admin@123 — 20 products added");
+        return Map.of("message", "Setup complete! Admin: admin / Admin@123 — Categories: Land Sale, Wedding, Vehicle");
     }
 }

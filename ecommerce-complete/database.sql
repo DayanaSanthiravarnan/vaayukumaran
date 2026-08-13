@@ -57,3 +57,8 @@ CREATE TABLE order_items (
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
+
+-- Default Categories for Vaayukumaran
+INSERT INTO categories (name, description) VALUES
+('Wedding', 'Elegant collections for your special day - bridal wear, decorations, jewellery and more'),
+('Vehicle', 'Premium accessories and parts for your ride - car, bike and more');

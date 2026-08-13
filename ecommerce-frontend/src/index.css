@@ -1,170 +1,27 @@
-:root {
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
-  --primary-light: #eff6ff;
-  --accent: #f59e0b;
-  --danger: #ef4444;
-  --danger-light: #fef2f2;
-  --success: #10b981;
-  --success-light: #ecfdf5;
-  --dark: #0f172a;
-  --dark-2: #1e293b;
-  --gray-1: #f8fafc;
-  --gray-2: #f1f5f9;
-  --gray-3: #e2e8f0;
-  --gray-4: #94a3b8;
-  --gray-5: #64748b;
-  --gray-6: #475569;
-  --text: #1e293b;
-  --text-light: #64748b;
-  --white: #ffffff;
-  --radius: 12px;
-  --radius-sm: 8px;
-  --radius-lg: 16px;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow: 0 4px 16px rgba(0,0,0,0.08);
-  --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
-  --transition: all 0.2s ease;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--gray-1);
-  color: var(--text);
-  line-height: 1.6;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f5f3ff;
+  color: #1e1b4b;
   -webkit-font-smoothing: antialiased;
 }
 
 a { text-decoration: none; color: inherit; }
-
-button { font-family: inherit; cursor: pointer; }
-
-input, select, textarea { font-family: inherit; }
+button { cursor: pointer; font-family: inherit; }
+input, textarea, select { font-family: inherit; }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
-
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideDown {
   from { opacity: 0; transform: translateY(-8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.animate-fade { animation: fadeIn 0.3s ease; }
-
-/* ===== MOBILE RESPONSIVE ===== */
-@media (max-width: 767px) {
-  /* Hamburger show, desktop links hide */
-  .desktop-links { display: none !important; }
-  .hamburger-btn { display: flex !important; }
-
-  /* Home grid — 2 columns on mobile */
-  .product-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
-
-  /* Cart layout — stack vertically */
-  .cart-layout { grid-template-columns: 1fr !important; }
-
-  /* Checkout layout — stack vertically */
-  .checkout-layout { grid-template-columns: 1fr !important; }
-
-  /* ProductDetail — stack vertically */
-  .product-detail-card { grid-template-columns: 1fr !important; }
-  .product-detail-info { padding: 20px !important; }
-
-  /* Admin table scroll */
-  .table-wrap { overflow-x: auto !important; }
-
-  /* Hero text smaller */
-  .hero-title { font-size: 28px !important; }
-
-  /* Padding reduce */
-  .page-container { padding: 0 12px !important; }
-}
-
-@media (max-width: 480px) {
-  /* Single column on very small screens */
-  .product-grid { grid-template-columns: 1fr !important; }
-}
-
-/* ===== LOGIN PAGE ===== */
-@media (max-width: 767px) {
-  /* Login - hide left panel, show only form */
-  .login-left { display: none !important; }
-  .login-card { border-radius: 16px !important; }
-  .login-right { padding: 32px 24px !important; }
-}
-
-/* ===== CART PAGE ===== */
-@media (max-width: 767px) {
-  .cart-layout { grid-template-columns: 1fr !important; }
-  .cart-row { flex-wrap: wrap !important; gap: 10px !important; padding: 12px 16px !important; }
-  .cart-summary { position: static !important; }
-}
-
-/* ===== CHECKOUT PAGE ===== */
-@media (max-width: 767px) {
-  .checkout-layout { grid-template-columns: 1fr !important; }
-  .checkout-summary { order: -1; }
-}
-
-/* ===== PRODUCT DETAIL PAGE ===== */
-@media (max-width: 767px) {
-  .product-detail-grid { grid-template-columns: 1fr !important; }
-  .product-detail-img { min-height: 280px !important; height: 280px !important; }
-  .product-detail-info { padding: 20px !important; }
-  .product-actions { flex-direction: column !important; }
-}
-
-/* ===== HOME PAGE ===== */
-@media (max-width: 767px) {
-  .hero { padding: 40px 20px !important; }
-  .hero-title { font-size: 30px !important; }
-  .filter-bar { flex-direction: column !important; }
-  .search-form { flex-direction: column !important; }
-  .product-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
-  .page-container { padding: 20px 12px !important; }
-}
-
-@media (max-width: 400px) {
-  .product-grid { grid-template-columns: 1fr !important; }
-}
-
-/* ===== ORDERS PAGE ===== */
-@media (max-width: 767px) {
-  .order-card-header { flex-direction: column !important; align-items: flex-start !important; }
-  .order-item-row { flex-wrap: wrap !important; }
-}
-
-/* ===== ADMIN PAGE ===== */
-@media (max-width: 767px) {
-  .admin-form-grid { grid-template-columns: 1fr !important; }
-  .admin-inline-form { grid-template-columns: 1fr !important; }
-  .admin-stats { flex-wrap: wrap !important; }
-  .admin-table-wrap { overflow-x: auto !important; }
-  .admin-page-header { flex-direction: column !important; align-items: flex-start !important; }
-}
-
-/* ===== REGISTER PAGE ===== */
-@media (max-width: 767px) {
-  .register-grid { grid-template-columns: 1fr !important; }
-  .register-grid > * { grid-column: 1 !important; }
-}
-
-/* ===== ADMIN PAGE FULL FIX ===== */
-@media (max-width: 767px) {
-  .admin-page-header { flex-direction: column !important; align-items: flex-start !important; padding: 16px !important; }
-  .admin-stats { flex-wrap: wrap !important; gap: 8px !important; }
-  .admin-form-grid { grid-template-columns: 1fr !important; }
-  .admin-form-grid > * { grid-column: 1 !important; }
-  .admin-inline-form { grid-template-columns: 1fr !important; }
-  .admin-inline-form button { width: 100% !important; }
-  .admin-table-wrap, [style*="overflowX"] { overflow-x: auto !important; min-width: 0 !important; }
-  .tab-bar { width: 100% !important; }
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f5f3ff; }
+::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 3px; }

@@ -24,35 +24,6 @@ public class DataInitializer implements ApplicationRunner {
     }
 
     private void updateAllPrices() {
-        List<Product> products = productRepository.findAll();
-        if (products.isEmpty()) return;
-
-        for (Product p : products) {
-            double newPrice = getRealisticPrice(p.getName().toLowerCase());
-            p.setPrice(newPrice);
-        }
-        productRepository.saveAll(products);
-    }
-
-    private double getRealisticPrice(String name) {
-        if (name.contains("saree"))           return 2499.00;
-        if (name.contains("silk"))            return 3499.00;
-        if (name.contains("lehenga"))         return 4999.00;
-        if (name.contains("blazer"))          return 3299.00;
-        if (name.contains("suit"))            return 5999.00;
-        if (name.contains("formal shirt") || name.contains("office")) return 1299.00;
-        if (name.contains("shirt"))           return 1099.00;
-        if (name.contains("jeans") || name.contains("denim")) return 1799.00;
-        if (name.contains("kurta") || name.contains("kurti")) return 1199.00;
-        if (name.contains("dress"))           return 1599.00;
-        if (name.contains("t-shirt") || name.contains("tshirt")) return 799.00;
-        if (name.contains("leggings"))        return 699.00;
-        if (name.contains("jacket"))          return 2499.00;
-        if (name.contains("sweater") || name.contains("hoodie")) return 1499.00;
-        if (name.contains("trouser") || name.contains("pant")) return 1299.00;
-        if (name.contains("skirt"))           return 999.00;
-        if (name.contains("top"))             return 899.00;
-        // default fallback
-        return 1299.00;
+        // Prices already set correctly in SetupController — no override needed
     }
 }
