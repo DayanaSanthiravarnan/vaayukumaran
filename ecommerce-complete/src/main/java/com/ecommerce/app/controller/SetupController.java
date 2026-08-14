@@ -26,10 +26,7 @@ public class SetupController {
 
     @GetMapping("/reset")
     public Map<String, String> reset() {
-        productRepository.deleteAll();
-        categoryRepository.deleteAll();
-        userRepository.deleteAll();
-        return Map.of("message", "All data cleared. Now call /api/setup/init");
+        return Map.of("message", "Reset disabled in production.");
     }
 
     @GetMapping("/init")

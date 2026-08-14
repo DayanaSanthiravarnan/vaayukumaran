@@ -21,6 +21,22 @@ export default function Admin() {
   const [error, setError] = useState("");
 
   const [editPrices, setEditPrices] = useState({});
+  const [uploading, setUploading] = useState(false);
+
+  const uploadToCloudinary = async (file) => {
+    setUploading(true);
+    try {
+      const data = new FormData();
+      data.append("file", file);
+      data.append("upload_preset", "Vaayukumaaran");
+      data.append("cloud_name", "obqajab8");
+      const res = await fetch("https://api.cloudinary.com/v1_1/obqajab8/image/upload", { method: "POST", body: data });
+      const json = await res.json();
+      if (json.secure_url) setPf("imageUrl", json.secure_url);
+      else flash("Upload failed", "error");
+    } catch { flash("Upload error", "error"); }
+    finally { setUploading(false); }
+  };
 
   const flash = (text, type = "success") => {
     setMsg({ text, type });
@@ -172,8 +188,24 @@ export default function Admin() {
                     </select>
                   </div>
                   <div style={{ ...s.field, gridColumn: "1/-1" }}>
-                    <label style={s.label}>Image URL</label>
-                    <input style={s.input} placeholder="https://..." value={pf.imageUrl} onChange={(e) => setPf("imageUrl", e.target.value)} />
+                    <label style={s.label}>Product Image</label>
+                    <div style={s.uploadWrap}>
+                      <label style={{ ...s.uploadBtn, ...(uploading ? s.uploadBtnOff : {}) }}>
+                        {uploading ? "⏳ Uploading..." : "📁 Choose Photo"}
+                        <input type="file" accept="image/*" style={{ display: "none" }}
+                          onChange={e => e.target.files[0] && uploadToCloudinary(e.target.files[0])}
+                          disabled={uploading} />
+                      </label>
+                      {pf.imageUrl && (
+                        <div style={s.previewWrap}>
+                          <img src={pf.imageUrl} alt="preview" style={s.preview} />
+                          <button type="button" style={s.removeImg} onClick={() => setPf("imageUrl", "")}>✕</button>
+                        </div>
+                      )}
+                    </div>
+                    <input style={{ ...s.input, marginTop: "8px", fontSize: "12px", color: "var(--gray-5)" }}
+                      placeholder="Or paste image URL directly..."
+                      value={pf.imageUrl} onChange={(e) => setPf("imageUrl", e.target.value)} />
                   </div>
                   <div style={{ ...s.field, gridColumn: "1/-1" }}>
                     <label style={s.label}>Description</label>
@@ -436,4 +468,10 @@ const s = {
     borderRadius: "var(--radius-sm)", fontSize: "12px",
     cursor: "pointer", color: "var(--text)",
   },
+  uploadWrap: { display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" },
+  uploadBtn: { display: "inline-flex", alignItems: "center", gap: "6px", padding: "10px 18px", background: "linear-gradient(135deg,#2563eb,#06b6d4)", color: "#fff", borderRadius: "var(--radius-sm)", fontWeight: "600", fontSize: "13px", cursor: "pointer", border: "none", whiteSpace: "nowrap", boxShadow: "0 4px 12px rgba(37,99,235,0.3)" },
+  uploadBtnOff: { opacity: 0.6, cursor: "not-allowed" },
+  previewWrap: { position: "relative", display: "inline-block" },
+  preview: { width: "80px", height: "80px", objectFit: "cover", borderRadius: "10px", border: "2px solid var(--gray-3)", display: "block" },
+  removeImg: { position: "absolute", top: "-6px", right: "-6px", width: "20px", height: "20px", borderRadius: "50%", background: "#ef4444", color: "#fff", border: "none", fontSize: "11px", fontWeight: "700", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", lineHeight: 1 },
 };
