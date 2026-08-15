@@ -29,6 +29,15 @@ public class SetupController {
         return Map.of("message", "Reset disabled in production.");
     }
 
+    @GetMapping("/fix-admin")
+    public Map<String, String> fixAdmin() {
+        return userRepository.findByUsername("admin").map(user -> {
+            user.setPassword(passwordEncoder.encode("Admin@123"));
+            userRepository.save(user);
+            return Map.of("message", "Admin password reset to Admin@123");
+        }).orElse(Map.of("message", "Admin user not found"));
+    }
+
     @GetMapping("/init")
     public Map<String, String> init() {
         if (userRepository.existsByUsername("admin")) {
