@@ -38,6 +38,19 @@ public class SetupController {
         }).orElse(Map.of("message", "Admin user not found"));
     }
 
+    @GetMapping("/check-admin")
+    public Map<String, Object> checkAdmin() {
+        return userRepository.findByUsername("admin").map(user -> {
+            boolean matches = passwordEncoder.matches("Admin@123", user.getPassword());
+            return Map.<String, Object>of(
+                "username", user.getUsername(),
+                "role", user.getRole(),
+                "passwordMatches", matches,
+                "passwordHash", user.getPassword().substring(0, 20) + "..."
+            );
+        }).orElse(Map.of("message", "not found"));
+    }
+
     @GetMapping("/init")
     public Map<String, String> init() {
         if (userRepository.existsByUsername("admin")) {
