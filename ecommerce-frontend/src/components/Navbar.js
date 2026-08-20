@@ -81,18 +81,12 @@ export default function Navbar() {
           {/* Logo - Left */}
           <Link to="/" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <div style={{
-              width: "40px", height: "40px",
-              backgroundColor: "var(--bg-ivory)",
-              border: "1px solid var(--border-beige)",
+              width: "48px", height: "48px",
               display: "flex", alignItems: "center", justifyContent: "center",
-              borderRadius: "var(--radius-sm)"
+              borderRadius: "50%", overflow: "hidden",
+              boxShadow: "var(--shadow-sm)"
             }}>
-              <span className="text-editorial" style={{ 
-                color: "var(--brand-forest)", 
-                fontSize: "20px", 
-                fontWeight: 600,
-                fontStyle: "italic"
-              }}>V</span>
+              <img src="/logo.png" alt="Vaayukumaaran Logo" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
             <div className="hide-mobile">
               <div className="text-editorial" style={{ 
