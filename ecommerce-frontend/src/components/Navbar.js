@@ -1,145 +1,272 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+
+const NAV_LINKS = [
+  { to: "/", label: "Home" },
+  { to: "/listings", label: "Marketplace" },
+];
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [dropOpen, setDropOpen] = useState(false);
+  const dropRef = useRef(null);
 
-  const isAdmin = location.pathname.startsWith("/admin");
+  const isActive = (p) => location.pathname === p;
 
-  const handleLogout = () => { logout(); navigate("/"); setMenuOpen(false); setDropOpen(false); };
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+    setMobileOpen(false);
+    setDropOpen(false);
+  };
 
-  const navLinks = [
-    { to: "/", label: "Home" },
-    { to: "/#listings", label: "Browse Listings" },
-    { to: "/#categories", label: "Categories" },
+  useEffect(() => {
+    const handler = (e) => {
+      if (dropRef.current && !dropRef.current.contains(e.target)) setDropOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  useEffect(() => { setMobileOpen(false); setDropOpen(false); }, [location.pathname]);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
+
+  const allNavLinks = [
+    ...NAV_LINKS,
+    ...(user ? [
+      { to: "/cart", label: "Cart" },
+      { to: "/orders", label: "My Orders" },
+      ...(user.role === "ADMIN" ? [{ to: "/admin", label: "Admin" }] : []),
+    ] : []),
   ];
 
   return (
-    <nav style={s.nav}>
-      <div style={s.inner}>
-        {/* Logo */}
-        <Link to="/" style={s.brand}>
-          <div style={s.logoMark}>V</div>
-          <div>
-            <span style={s.brandName}>Vaayukumaaran</span>
-            <span style={s.brandTag}>Marketplace</span>
-          </div>
-        </Link>
-
-        {/* Desktop links */}
-        <div style={s.links}>
-          {navLinks.map(l => (
-            <Link key={l.to} to={l.to} style={{ ...s.link, ...(location.pathname === l.to ? s.linkActive : {}) }}>
-              {l.label}
-            </Link>
-          ))}
-        </div>
-
-        {/* Right actions */}
-        <div style={s.actions}>
-          {user && (
-            <Link to="/cart" style={s.cartBtn} title="Cart">
-              🛒
-            </Link>
-          )}
-          {!user ? (
-            <>
-              <Link to="/login" style={s.signInBtn}>Sign in</Link>
-              <Link to="/register" style={s.registerBtn}>Get Started</Link>
-            </>
-          ) : (
-            <div style={s.userMenu} onClick={() => setDropOpen(!dropOpen)}>
-              <div style={s.avatar} title={user.username}>
-                {user.username?.[0]?.toUpperCase()}
-              </div>
-              {dropOpen && (
-                <div style={{ ...s.dropdown, display: "block" }}>
-                  <div style={s.dropUser}>
-                    <span style={s.dropName}>{user.name || user.username}</span>
-                    <span style={s.dropRole}>{user.role}</span>
-                  </div>
-                  <div style={s.dropDivider} />
-                  {user.role === "ADMIN" && (
-                    <Link to="/admin" style={s.dropItem} onClick={() => setDropOpen(false)}>⚙ Admin Panel</Link>
-                  )}
-                  <Link to="/orders" style={s.dropItem} onClick={() => setDropOpen(false)}>📦 My Orders</Link>
-                  <Link to="/profile" style={s.dropItem} onClick={() => setDropOpen(false)}>👤 Profile</Link>
-                  <div style={s.dropDivider} />
-                  <button style={s.dropLogout} onClick={handleLogout}>Sign out</button>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Mobile hamburger */}
-          <button style={s.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? "✕" : "☰"}
-          </button>
-        </div>
+    <>
+      {/* Announcement bar */}
+      <div style={{
+        backgroundColor: "var(--brand-forest)",
+        color: "var(--bg-white)",
+        textAlign: "center",
+        fontSize: "12px",
+        fontWeight: 500,
+        padding: "8px 16px",
+        letterSpacing: "0.5px"
+      }}>
+        Verified listings for land, weddings and vehicles.
       </div>
 
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div style={s.mobileMenu}>
-          {navLinks.map(l => (
-            <Link key={l.to} to={l.to} style={s.mobileLink} onClick={() => setMenuOpen(false)}>{l.label}</Link>
-          ))}
-          {user ? (
-            <>
-              <Link to="/cart" style={s.mobileLink} onClick={() => setMenuOpen(false)}>🛒 Cart</Link>
-              <Link to="/orders" style={s.mobileLink} onClick={() => setMenuOpen(false)}>📦 Orders</Link>
-              <Link to="/profile" style={s.mobileLink} onClick={() => setMenuOpen(false)}>👤 Profile</Link>
-              {user.role === "ADMIN" && <Link to="/admin" style={s.mobileLink} onClick={() => setMenuOpen(false)}>⚙ Admin</Link>}
-              <button style={s.mobileLogout} onClick={handleLogout}>Sign out</button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" style={s.mobileLink} onClick={() => setMenuOpen(false)}>Sign in</Link>
-              <Link to="/register" style={{ ...s.mobileLink, color: "var(--accent)", fontWeight: "700" }} onClick={() => setMenuOpen(false)}>Get Started</Link>
-            </>
-          )}
+      {/* Main navbar */}
+      <header style={{
+        backgroundColor: "var(--bg-white)",
+        borderBottom: "1px solid var(--border-beige)",
+        position: "sticky",
+        top: 0,
+        zIndex: 800,
+      }}>
+        <div className="container" style={{
+          display: "flex",
+          alignItems: "center",
+          height: "var(--nav-height)",
+          justifyContent: "space-between"
+        }}>
+          
+          {/* Logo - Left */}
+          <Link to="/" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div style={{
+              width: "40px", height: "40px",
+              backgroundColor: "var(--bg-ivory)",
+              border: "1px solid var(--border-beige)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              borderRadius: "var(--radius-sm)"
+            }}>
+              <span className="text-editorial" style={{ 
+                color: "var(--brand-forest)", 
+                fontSize: "20px", 
+                fontWeight: 600,
+                fontStyle: "italic"
+              }}>V</span>
+            </div>
+            <div className="hide-mobile">
+              <div className="text-editorial" style={{ 
+                fontSize: "22px", 
+                fontWeight: 600, 
+                color: "var(--text-charcoal)", 
+                lineHeight: 1 
+              }}>
+                Vaayukumaaran
+              </div>
+            </div>
+          </Link>
+
+          {/* Links - Middle (Desktop) */}
+          <nav className="hide-mobile" style={{ display: "flex", gap: "32px", alignItems: "center" }}>
+            {NAV_LINKS.map(({ to, label }) => (
+              <Link key={to} to={to} style={{
+                fontSize: "15px",
+                fontWeight: isActive(to) ? 600 : 400,
+                color: isActive(to) ? "var(--brand-forest)" : "var(--text-charcoal)",
+                borderBottom: isActive(to) ? "2px solid var(--brand-forest)" : "2px solid transparent",
+                padding: "4px 0"
+              }}>
+                {label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Actions - Right (Desktop) */}
+          <div className="hide-mobile" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            
+            <Link to="/listings" style={{ display: "flex", alignItems: "center", color: "var(--text-charcoal)" }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </Link>
+
+            {user && (
+              <Link to="/cart" style={{ display: "flex", alignItems: "center", color: "var(--text-charcoal)" }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <path d="M16 10a4 4 0 01-8 0" />
+                </svg>
+              </Link>
+            )}
+
+            {user ? (
+              <div ref={dropRef} style={{ position: "relative" }}>
+                <button
+                  onClick={() => setDropOpen(!dropOpen)}
+                  style={{
+                    display: "flex", alignItems: "center", gap: "8px",
+                    padding: "6px 12px", border: "1px solid var(--border-beige)",
+                    borderRadius: "var(--radius-sm)", backgroundColor: "var(--bg-ivory)"
+                  }}
+                >
+                  <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-charcoal)" }}>
+                    {user.username}
+                  </span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: dropOpen ? "rotate(180deg)" : "none" }}>
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+                {dropOpen && (
+                  <div style={{
+                    position: "absolute", top: "calc(100% + 8px)", right: 0,
+                    backgroundColor: "var(--bg-white)", border: "1px solid var(--border-beige)",
+                    borderRadius: "var(--radius-sm)", boxShadow: "var(--shadow-md)",
+                    minWidth: "160px", padding: "8px", zIndex: 100
+                  }}>
+                    {[
+                      { to: "/profile", label: "Profile" },
+                      { to: "/orders", label: "Orders" },
+                      ...(user.role === "ADMIN" ? [{ to: "/admin", label: "Admin" }] : []),
+                    ].map(({ to, label }) => (
+                      <Link key={to} to={to} style={{
+                        display: "block", padding: "8px 12px", fontSize: "14px",
+                        color: "var(--text-charcoal)", borderRadius: "var(--radius-sm)"
+                      }} onMouseEnter={e => e.target.style.backgroundColor = "var(--bg-ivory)"} onMouseLeave={e => e.target.style.backgroundColor = "transparent"}>
+                        {label}
+                      </Link>
+                    ))}
+                    <button onClick={handleLogout} style={{
+                      display: "block", width: "100%", textAlign: "left", padding: "8px 12px",
+                      fontSize: "14px", color: "var(--status-error)", borderRadius: "var(--radius-sm)",
+                      marginTop: "4px"
+                    }} onMouseEnter={e => e.target.style.backgroundColor = "#FEF2F2"} onMouseLeave={e => e.target.style.backgroundColor = "transparent"}>
+                      Sign out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link to="/login" style={{ fontSize: "15px", fontWeight: 500, color: "var(--text-charcoal)" }}>Sign in</Link>
+            )}
+
+            <Link to="/admin" className="btn-secondary" style={{ padding: "8px 16px", fontSize: "14px" }}>
+              Post Listing
+            </Link>
+          </div>
+
+          {/* Mobile right icons */}
+          <div className="hide-desktop" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <Link to="/listings" style={{ color: "var(--text-charcoal)" }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </Link>
+            {user && (
+              <Link to="/cart" style={{ color: "var(--text-charcoal)" }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <path d="M16 10a4 4 0 01-8 0" />
+                </svg>
+              </Link>
+            )}
+            <button onClick={() => setMobileOpen(true)} style={{ color: "var(--text-charcoal)" }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile Menu Overlay */}
+      {mobileOpen && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 900,
+          backgroundColor: "rgba(0,0,0,0.4)",
+          display: "flex", justifyContent: "flex-end"
+        }}>
+          <div style={{
+            width: "80%", maxWidth: "320px", height: "100%",
+            backgroundColor: "var(--bg-white)", padding: "24px",
+            display: "flex", flexDirection: "column"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
+              <span className="text-editorial" style={{ fontSize: "20px", fontWeight: 600 }}>Vaayukumaaran</span>
+              <button onClick={() => setMobileOpen(false)}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px", flex: 1 }}>
+              {allNavLinks.map(({ to, label }) => (
+                <Link key={to} to={to} style={{
+                  fontSize: "18px", fontWeight: 500, color: "var(--text-charcoal)",
+                  paddingBottom: "8px", borderBottom: "1px solid var(--border-beige)"
+                }} onClick={() => setMobileOpen(false)}>{label}</Link>
+              ))}
+            </div>
+            <div style={{ borderTop: "1px solid var(--border-beige)", paddingTop: "24px", display: "flex", flexDirection: "column", gap: "12px" }}>
+              {user ? (
+                <>
+                  <div style={{ fontSize: "14px", color: "var(--text-muted)" }}>Signed in as {user.username}</div>
+                  <button onClick={handleLogout} className="btn-outline" style={{ color: "var(--status-error)", borderColor: "var(--status-error)" }}>Sign out</button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" className="btn-outline" style={{ width: "100%", textAlign: "center" }} onClick={() => setMobileOpen(false)}>Sign in</Link>
+                  <Link to="/register" className="btn-primary" style={{ width: "100%", textAlign: "center" }} onClick={() => setMobileOpen(false)}>Create Account</Link>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       )}
-    </nav>
+    </>
   );
 }
-
-const s = {
-  nav: { background: "var(--navy)", position: "sticky", top: 0, zIndex: 1000, boxShadow: "0 1px 0 rgba(255,255,255,0.06)" },
-  inner: { maxWidth: "1280px", margin: "0 auto", padding: "0 24px", height: "64px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "24px" },
-
-  brand: { display: "flex", alignItems: "center", gap: "10px", textDecoration: "none", flexShrink: 0 },
-  logoMark: { width: "36px", height: "36px", borderRadius: "10px", background: "var(--accent)", color: "#fff", fontSize: "18px", fontWeight: "900", display: "flex", alignItems: "center", justifyContent: "center" },
-  brandName: { display: "block", color: "#fff", fontWeight: "800", fontSize: "16px", letterSpacing: "-0.3px", lineHeight: 1.2 },
-  brandTag: { display: "block", color: "rgba(255,255,255,0.4)", fontSize: "10px", textTransform: "uppercase", letterSpacing: "1px" },
-
-  links: { display: "flex", gap: "4px", flex: 1, justifyContent: "center" },
-  link: { color: "rgba(255,255,255,0.65)", fontSize: "14px", fontWeight: "500", padding: "6px 12px", borderRadius: "8px", transition: "var(--transition)", textDecoration: "none" },
-  linkActive: { color: "#fff", background: "rgba(255,255,255,0.08)" },
-
-  actions: { display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 },
-  cartBtn: { width: "36px", height: "36px", borderRadius: "8px", background: "rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", color: "#fff", textDecoration: "none", transition: "var(--transition)" },
-  signInBtn: { color: "rgba(255,255,255,0.75)", fontSize: "14px", fontWeight: "500", padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.15)", textDecoration: "none", transition: "var(--transition)" },
-  registerBtn: { color: "#fff", fontSize: "14px", fontWeight: "600", padding: "7px 16px", borderRadius: "8px", background: "var(--accent)", textDecoration: "none", transition: "var(--transition)" },
-
-  userMenu: { position: "relative", display: "inline-block", cursor: "pointer" },
-  avatar: { width: "36px", height: "36px", borderRadius: "50%", background: "var(--accent)", color: "#fff", fontSize: "15px", fontWeight: "700", display: "flex", alignItems: "center", justifyContent: "center" },
-  dropdown: { position: "absolute", right: 0, top: "calc(100% + 8px)", background: "#fff", borderRadius: "var(--radius-md)", boxShadow: "var(--shadow-lg)", border: "1px solid var(--border)", minWidth: "200px", padding: "8px", display: "none", zIndex: 100 },
-  dropUser: { padding: "8px 12px 12px" },
-  dropName: { display: "block", fontWeight: "700", color: "var(--navy)", fontSize: "14px" },
-  dropRole: { display: "block", fontSize: "11px", color: "var(--accent)", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px", marginTop: "2px" },
-  dropDivider: { height: "1px", background: "var(--border)", margin: "4px 0" },
-  dropItem: { display: "block", padding: "8px 12px", fontSize: "14px", color: "var(--body)", borderRadius: "8px", textDecoration: "none", transition: "var(--transition)" },
-  dropLogout: { display: "block", width: "100%", padding: "8px 12px", fontSize: "14px", color: "var(--danger)", background: "none", border: "none", textAlign: "left", borderRadius: "8px", fontWeight: "600", cursor: "pointer" },
-
-  hamburger: { display: "none", background: "none", border: "none", color: "#fff", fontSize: "20px", padding: "4px 8px" },
-
-  mobileMenu: { background: "var(--navy)", borderTop: "1px solid rgba(255,255,255,0.08)", padding: "12px 24px 20px", display: "flex", flexDirection: "column", gap: "4px" },
-  mobileLink: { color: "rgba(255,255,255,0.8)", fontSize: "15px", fontWeight: "500", padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.06)", textDecoration: "none" },
-  mobileLogout: { color: "#f87171", background: "none", border: "none", fontSize: "15px", fontWeight: "600", padding: "10px 0", textAlign: "left", marginTop: "4px" },
-};

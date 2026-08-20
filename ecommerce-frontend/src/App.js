@@ -10,6 +10,8 @@ import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 import ProductDetail from "./pages/ProductDetail";
 import Checkout from "./pages/Checkout";
+import Footer from "./components/Footer";
+import Listings from "./pages/Listings";
 
 function PrivateRoute({ children }) {
   const { user } = useAuth();
@@ -27,6 +29,7 @@ function AppRoutes() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/listings" element={<Listings />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/product/:id" element={<ProductDetail />} />
@@ -37,6 +40,7 @@ function AppRoutes() {
         <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+      <Footer />
     </>
   );
 }
