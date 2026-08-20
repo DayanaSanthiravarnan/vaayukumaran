@@ -88,9 +88,16 @@ export default function Listings() {
     setTimeout(() => setMsg({ text: "", type: "" }), 2500);
   };
 
+  const isCategoryMatch = (catName1, catName2) => {
+    if (!catName1 || !catName2) return false;
+    const n1 = catName1.toLowerCase().trim().replace(/s$/, ""); // remove trailing 's' for plural
+    const n2 = catName2.toLowerCase().trim().replace(/s$/, "");
+    return n1.includes(n2) || n2.includes(n1);
+  };
+
   // Client-side filtering for price, availability and category (if not searching by name only)
   const filteredProducts = products.filter(p => {
-    if (selectedCategory && p.category?.name !== selectedCategory) return false;
+    if (selectedCategory && !isCategoryMatch(p.category?.name, selectedCategory)) return false;
     if (minPrice && p.price < Number(minPrice)) return false;
     if (maxPrice && p.price > Number(maxPrice)) return false;
     if (availability === "instock" && p.stock <= 0) return false;
@@ -143,7 +150,7 @@ export default function Listings() {
                   </label>
                   {categories.map(c => (
                     <label key={c.id} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "15px", cursor: "pointer" }}>
-                      <input type="radio" name="category" checked={selectedCategory === c.name} onChange={() => setSelectedCategory(c.name)} />
+                      <input type="radio" name="category" checked={isCategoryMatch(selectedCategory, c.name)} onChange={() => setSelectedCategory(c.name)} />
                       {c.name}
                     </label>
                   ))}
@@ -262,7 +269,7 @@ export default function Listings() {
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   <label style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "16px" }}><input type="radio" name="mobile_category" checked={selectedCategory === ""} onChange={() => setSelectedCategory("")} /> All Categories</label>
                   {categories.map(c => (
-                    <label key={c.id} style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "16px" }}><input type="radio" name="mobile_category" checked={selectedCategory === c.name} onChange={() => setSelectedCategory(c.name)} /> {c.name}</label>
+                    <label key={c.id} style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "16px" }}><input type="radio" name="mobile_category" checked={isCategoryMatch(selectedCategory, c.name)} onChange={() => setSelectedCategory(c.name)} /> {c.name}</label>
                   ))}
                 </div>
               </div>
